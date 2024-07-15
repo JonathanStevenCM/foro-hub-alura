@@ -1,6 +1,8 @@
 package com.forohub.api.controller;
 
+import java.lang.module.ResolutionException;
 import java.net.URI;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,13 +52,14 @@ public class TopicoController {
     @GetMapping
     public ResponseEntity<Page<DatosListadoTopico>> listadoTopico(Pageable paginacion) {
 
-        return ResponseEntity.ok(topicoRepository.findAllByActivoIsTrue(paginacion));
+        return ResponseEntity.ok(topicoRepository.findAll(paginacion).map(DatosListadoTopico::new));
     }
 
     @PutMapping
     @Transactional
     public ResponseEntity actualizarTopico(@RequestBody @Valid DatosActualizarTopico datosActualizarMedico) {
         Topico topico = topicoRepository.getReferenceById(datosActualizarMedico.id());
+        
         topico.actualizarDatos(datosActualizarMedico);
         return ResponseEntity.ok(new DatosRespuestaTopico(topico.getId(), topico.getTitulo(), 
         topico.getMensaje(), topico.getFecha(),topico.getActivo(),
@@ -67,9 +70,13 @@ public class TopicoController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity eliminarTopico(@PathVariable Long id) {
-        Topico topico = topicoRepository.getReferenceById(id);
-        topico.desactivarTopico();
-        return ResponseEntity.noContent().build();
+        Optional<Topico> optionalTopico = topicoRepository.findById(id);
+        if (optionalTopico.isPresent()) {
+            topicoRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")
