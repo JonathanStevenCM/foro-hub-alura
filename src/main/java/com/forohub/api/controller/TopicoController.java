@@ -22,7 +22,7 @@ import com.forohub.api.domain.topico.DatosListadoTopico;
 import com.forohub.api.domain.topico.DatosRegistroTopico;
 import com.forohub.api.domain.topico.DatosRespuestaTopico;
 import com.forohub.api.domain.topico.Topico;
-import com.forohub.api.repository.TopicoRepository;
+import com.forohub.api.domain.topico.TopicoRepository;
 
 import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 public class TopicoController {
     @Autowired
     private TopicoRepository topicoRepository;
+
 
     @PostMapping
     @Transient
@@ -49,7 +50,7 @@ public class TopicoController {
     @GetMapping
     public ResponseEntity<Page<DatosListadoTopico>> listadoTopico(Pageable paginacion) {
 
-        return ResponseEntity.ok(topicoRepository.findAll(paginacion).map(DatosListadoTopico::new));
+        return ResponseEntity.ok(topicoRepository.findAllByActivoIsTrue(paginacion));
     }
 
     @PutMapping

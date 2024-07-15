@@ -14,5 +14,6 @@ public record DatosListadoTopico(Long id,
 
         public DatosListadoTopico(Topico topico) {
             this(topico.getId(), topico.getTitulo(), topico.getMensaje(), topico.getFecha(),topico.getActivo(), topico.getAutor(),topico.getCurso().toString());
-        }
+            
+    }
 } 
